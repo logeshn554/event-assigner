@@ -213,9 +213,12 @@ function getFallbackBudgetCategories(input: EventInput): BudgetCategory[] {
 }
 
 function getFallbackTimeline(input: EventInput): TimelineMilestone[] {
-  const eventDate = new Date(input.date);
+  const rawDate = input.date || (input as unknown as { eventDate?: string }).eventDate || '';
+  const eventDate = new Date(rawDate);
   const now = new Date();
-  const diffWeeks = Math.max(1, Math.round((eventDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24 * 7)));
+  const diffWeeks = isNaN(eventDate.getTime())
+    ? 12
+    : Math.max(1, Math.round((eventDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24 * 7)));
 
   return [
     {

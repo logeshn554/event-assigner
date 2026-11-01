@@ -28,3 +28,14 @@ Object.defineProperty(window, 'scrollTo', {
 // Mock Element.prototype.scrollIntoView
 Element.prototype.scrollIntoView = () => {};
 
+// Mock URL.createObjectURL and URL.revokeObjectURL for jsdom
+URL.createObjectURL = () => 'blob:mock-blob-url';
+URL.revokeObjectURL = () => {};
+
+// Mock window.print
+if (typeof window !== 'undefined') {
+  window.print = () => {};
+}
+
+
+

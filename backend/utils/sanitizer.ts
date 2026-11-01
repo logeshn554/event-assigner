@@ -16,7 +16,7 @@ export function stripControlCharacters(input: string): string {
  */
 export function truncateLength(input: string, maxLength: number): string {
   if (typeof input !== 'string') return '';
-  return input.slice(0, maxLength).trim();
+  return input.trim().slice(0, maxLength);
 }
 
 /**

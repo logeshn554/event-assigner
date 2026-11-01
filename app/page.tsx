@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import type { EventInput } from '@/backend/schemas/eventInputSchema';
-import type { EventPlan } from '@/backend/schemas/eventPlanSchema';
 import { useEventPlan } from '@/frontend/hooks/useEventPlan';
 import { EventSetupForm } from '@/frontend/components/form/EventSetupForm';
 import { PlanDisplay } from '@/frontend/components/plan/PlanDisplay';

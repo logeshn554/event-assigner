@@ -164,6 +164,13 @@ export function BudgetTracker({
                           >
                             Save
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditingId(null)}
+                            className="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                          >
+                            Cancel
+                          </button>
                         </div>
                       ) : (
                         <button

@@ -11,14 +11,13 @@ describe('Integration: POST /api/chat', () => {
 
   const samplePlan = generateFallbackPlan({
     eventType: 'wedding',
-    date: '2027-06-15',
+    eventDate: '2027-06-15',
     city: 'Hyderabad',
     guestCount: 200,
     totalBudget: 1500000,
     currency: 'INR',
     themeStyle: 'Nizami',
-    preferences: 'Biryani tasting',
-    culturalOrDietaryNotes: 'Halal'
+    dietaryNotes: 'Halal'
   });
 
   it('initiates an SSE stream for valid refinement query', async () => {
@@ -62,5 +61,20 @@ describe('Integration: POST /api/chat', () => {
     const data = await res.json();
     expect(data.error.code).toBe('VALIDATION_ERROR');
   });
-});
 
+  it('rejects malformed JSON payload with 400 status', async () => {
+    const req = new NextRequest('http://localhost:3000/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-forwarded-for': '192.168.2.3'
+      },
+      body: 'invalid-non-json{{{'
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.error.code).toBe('VALIDATION_ERROR');
+  });
+});

@@ -134,11 +134,12 @@ export function IdeasView({ ideas, currency, onShowToast }: IdeasViewProps) {
           <button
             type="button"
             onClick={handleCopyInvite}
-            className="mt-4 inline-flex items-center justify-center space-x-2 px-3 py-2 rounded-xl text-xs font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500"
+            aria-label="Copy invitation draft text to clipboard"
+            className="mt-4 inline-flex items-center justify-center space-x-2 min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             {copiedInvite ? (
               <>
-                <CheckCheck className="w-4 h-4 text-emerald-600" aria-hidden="true" />
+                <CheckCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
                 <span>Copied Wording!</span>
               </>
             ) : (
@@ -168,11 +169,11 @@ export function IdeasView({ ideas, currency, onShowToast }: IdeasViewProps) {
                   <h5 className="text-xs font-bold text-gray-900 dark:text-white">
                     {gift.item}
                   </h5>
-                  <span className="text-xs font-semibold text-brand-600 dark:text-brand-400">
+                  <span className="text-xs font-semibold text-brand-700 dark:text-brand-300">
                     ~{formatCurrency(gift.estimatedUnitCost, currency)} / unit
                   </span>
                 </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
                   {gift.description}
                 </p>
               </div>

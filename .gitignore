@@ -18,6 +18,8 @@
 *.pem
 diagnose*.js
 *.tmp
+/.temp/
+.temp
 
 # debug
 npm-debug.log*

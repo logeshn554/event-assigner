@@ -11,7 +11,7 @@ describe('Component: BudgetTracker', () => {
       category: 'Venue & Catering',
       percentage: 50,
       allocatedAmount: 500000,
-      actualSpent: 450000,
+      actualSpent: 550000, // over budget
       rationale: 'Banquet and food'
     },
     {
@@ -38,6 +38,7 @@ describe('Component: BudgetTracker', () => {
     expect(screen.getByText(/Remaining Balance/i)).toBeInTheDocument();
     expect(screen.getByRole('table')).toBeInTheDocument();
     expect(screen.getByRole('rowheader', { name: /Venue & Catering/i })).toBeInTheDocument();
+    expect(screen.getByText(/OVER/i)).toBeInTheDocument();
   });
 
   it('allows clicking an actual spend button to enter an updated value', () => {
@@ -62,5 +63,23 @@ describe('Component: BudgetTracker', () => {
 
     expect(mockUpdate).toHaveBeenCalledWith('cat_decor', 480000);
   });
-});
 
+  it('allows canceling edit mode with cancel button or escape key', () => {
+    render(
+      <BudgetTracker
+        categories={sampleCategories}
+        totalBudget={1000000}
+        currency="INR"
+        onUpdateSpend={vi.fn()}
+      />
+    );
+
+    const editBtn = screen.getByLabelText(/Edit actual spend for Decor/i);
+    fireEvent.click(editBtn);
+
+    const cancelBtn = screen.getByRole('button', { name: /Cancel/i });
+    fireEvent.click(cancelBtn);
+
+    expect(screen.queryByRole('button', { name: /Save/i })).not.toBeInTheDocument();
+  });
+});

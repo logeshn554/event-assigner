@@ -18,7 +18,7 @@ export function TimelineView({ timeline, onToggleTask }: TimelineViewProps) {
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">
             Milestone Timeline & Action Plan
           </h3>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1">
             Chronological stages scheduled from kickoff down to event day execution.
           </p>
         </div>
@@ -46,7 +46,7 @@ export function TimelineView({ timeline, onToggleTask }: TimelineViewProps) {
 
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <span className="inline-flex items-center text-xs font-bold px-2.5 py-0.5 rounded-md bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-300 border border-brand-200 dark:border-brand-800">
+                  <span className="inline-flex items-center text-xs font-bold px-2.5 py-0.5 rounded-md bg-brand-50 text-brand-800 dark:bg-brand-950 dark:text-brand-200 border border-brand-300 dark:border-brand-700">
                     <Clock className="w-3 h-3 mr-1" aria-hidden="true" />
                     {milestone.tMinusWeeks === 0
                       ? 'Event Day (T-0)'
@@ -55,7 +55,7 @@ export function TimelineView({ timeline, onToggleTask }: TimelineViewProps) {
                   <h4 className="text-base font-bold text-gray-900 dark:text-white">
                     {milestone.phaseTitle}
                   </h4>
-                  <span className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-300 ml-auto">
                     {completedCount} of {totalTasks} tasks done
                   </span>
                 </div>
@@ -65,23 +65,24 @@ export function TimelineView({ timeline, onToggleTask }: TimelineViewProps) {
                   {milestone.tasks.map((task) => (
                     <div
                       key={task.id}
-                      className="flex items-start justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200/80 dark:border-gray-800 hover:border-brand-300 dark:hover:border-brand-700 transition-colors"
+                      className="flex items-center justify-between min-h-[44px] p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200/80 dark:border-gray-800 hover:border-brand-300 dark:hover:border-brand-700 transition-colors"
                     >
-                      <label className="flex items-start space-x-3 cursor-pointer flex-1 mr-3">
+                      <label className="flex items-start space-x-3 cursor-pointer flex-1 mr-3 min-h-[44px] py-1">
                         <input
                           type="checkbox"
                           checked={task.completed}
                           onChange={() => onToggleTask(milestone.id, task.id)}
-                          className="mt-1 h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-800 cursor-pointer"
+                          aria-label={`Mark task completed: ${task.title}`}
+                          className="mt-1 h-5 w-5 rounded border-gray-300 text-brand-600 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-800 cursor-pointer"
                         />
                         <div>
                           <span
-                            className={`text-sm font-medium ${task.completed ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-900 dark:text-white'}`}
+                            className={`text-sm font-medium ${task.completed ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-900 dark:text-white'}`}
                           >
                             {task.title}
                           </span>
-                          <span className="block text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                            Assigned to: <strong className="font-semibold text-gray-700 dark:text-gray-300">{task.owner}</strong>
+                          <span className="block text-xs text-gray-600 dark:text-gray-300 mt-0.5">
+                            Assigned to: <strong className="font-semibold text-gray-800 dark:text-gray-200">{task.owner}</strong>
                           </span>
                         </div>
                       </label>

@@ -9,6 +9,36 @@ describe('LruTtlCache & Cache Key Generation', () => {
 
     const retrieved = await cache.get('k1');
     expect(retrieved).toBe('val1');
+    expect(cache.size()).toBe(1);
+  });
+
+  it('updates existing key and resets its TTL and position', async () => {
+    const cache = new LruTtlCache<string>(5, 1000);
+    await cache.set('k1', 'initial');
+    await cache.set('k1', 'updated');
+
+    expect(await cache.get('k1')).toBe('updated');
+    expect(cache.size()).toBe(1);
+  });
+
+  it('deletes and clears cached entries', async () => {
+    const cache = new LruTtlCache<string>(5, 1000);
+    await cache.set('k1', 'val1');
+    await cache.set('k2', 'val2');
+
+    await cache.delete('k1');
+    expect(await cache.get('k1')).toBeNull();
+    expect(cache.size()).toBe(1);
+
+    await cache.clear();
+    expect(cache.size()).toBe(0);
+  });
+
+  it('returns null when entry has expired', async () => {
+    const cache = new LruTtlCache<string>(5, -100); // already expired TTL
+    await cache.set('expired_key', 'old_val');
+
+    expect(await cache.get('expired_key')).toBeNull();
   });
 
   it('evicts the oldest item when capacity limit is reached', async () => {
@@ -25,29 +55,26 @@ describe('LruTtlCache & Cache Key Generation', () => {
   it('produces identical cache keys for normalized variations of user input', () => {
     const input1: EventInput = {
       eventType: 'wedding',
-      date: '2027-05-10',
+      eventDate: '2027-05-10',
       city: '  Mumbai  ',
       guestCount: 200,
       totalBudget: 1000000,
       currency: 'INR',
       themeStyle: 'ROYAL',
-      preferences: 'test',
-      culturalOrDietaryNotes: 'veg'
+      dietaryNotes: 'veg'
     };
 
     const input2: EventInput = {
       eventType: 'wedding',
-      date: '2027-05-10',
+      eventDate: '2027-05-10',
       city: 'mumbai',
       guestCount: 200,
       totalBudget: 1000000,
       currency: 'INR',
       themeStyle: 'royal',
-      preferences: 'test',
-      culturalOrDietaryNotes: 'veg'
+      dietaryNotes: 'veg'
     };
 
     expect(generatePlanCacheKey(input1)).toBe(generatePlanCacheKey(input2));
   });
 });
-

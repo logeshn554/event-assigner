@@ -48,5 +48,27 @@ describe('Component: VendorChecklist', () => {
     fireEvent.click(bookBtn);
     expect(mockToggle).toHaveBeenCalledWith('v_venue');
   });
-});
 
+  it('copies vendor checklist to clipboard', () => {
+    const onShowToastMock = vi.fn();
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: vi.fn().mockResolvedValue(undefined)
+      }
+    });
+
+    render(
+      <VendorChecklist
+        checklist={sampleChecklist}
+        currency="INR"
+        onToggleBooked={vi.fn()}
+        onShowToast={onShowToastMock}
+      />
+    );
+
+    const copyBtn = screen.getByRole('button', { name: /Copy Checklist/i });
+    fireEvent.click(copyBtn);
+
+    expect(onShowToastMock).toHaveBeenCalledWith('Vendor checklist copied to clipboard!', 'success');
+  });
+});
