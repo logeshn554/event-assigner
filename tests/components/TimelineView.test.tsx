@@ -55,3 +55,4 @@ describe('TimelineView Component', () => {
     expect(results).toHaveNoViolations();
   });
 });
+

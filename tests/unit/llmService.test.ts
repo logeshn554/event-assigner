@@ -56,3 +56,4 @@ describe('GeminiLlmService Unit Tests', () => {
     expect(result.plan.budgetBreakdown.length).toBeGreaterThan(0);
   });
 });
+

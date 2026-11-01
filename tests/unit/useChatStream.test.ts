@@ -93,3 +93,4 @@ describe('useChatStream Hook', () => {
     expect(result.current.isStreaming).toBe(false);
   });
 });
+
