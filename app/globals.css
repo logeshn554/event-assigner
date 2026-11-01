@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-inter);
+    color: #111827;
+    background-color: #f9fafb;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      color: #f9fafb;
+      background-color: #030712;
+    }
+  }
+
+  /* Accessibility: Prefers reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Print Styles for PDF / Paper Export */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  header,
+  footer,
+  nav,
+  button,
+  input,
+  textarea,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .border,
+  .rounded-2xl,
+  .rounded-xl {
+    border-color: #d1d5db !important;
+    box-shadow: none !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  th, td {
+    border-bottom: 1px solid #e5e7eb !important;
+  }
+}
