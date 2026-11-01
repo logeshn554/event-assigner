@@ -16,7 +16,7 @@ export function stripControlCharacters(input: string): string {
  */
 export function truncateLength(input: string, maxLength: number): string {
   if (typeof input !== 'string') return '';
-  return input.slice(0, maxLength).trim();
+  return input.trim().slice(0, maxLength);
 }
 
 /**
@@ -37,4 +37,3 @@ export function delimitUserInput(content: Record<string, unknown> | string): str
   const safeContent = rawString.replace(/<\/user_input>/gi, '&lt;/user_input&gt;');
   return `<user_input>\n${safeContent}\n</user_input>`;
 }
-
