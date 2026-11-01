@@ -35,8 +35,9 @@ export class GeminiLlmService implements ILlmService {
 
   /**
    * Generates a structured event plan using Gemini native structured outputs.
-   * If the API key is absent, times out, or encounters 429/5xx after retry,
-   * falls back safely to the deterministic fallback planner.
+   * If the primary model experiences high demand (503) or rate limits, it automatically
+   * tries the stable fallback model (gemini-2.5-flash).
+   * If all models fail, it seamlessly falls back to the deterministic planner.
    */
   public async generatePlan(
     input: EventInput
@@ -49,37 +50,48 @@ export class GeminiLlmService implements ILlmService {
       };
     }
 
-    try {
-      const plan = await this.callWithRetry(() => this.executePlanGeneration(input));
-      return {
-        plan,
-        fallbackUsed: false
-      };
-    } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : String(err);
-      console.warn(`[GeminiLlmService] Generation failed (${errorMsg}). Gracefully switching to fallback planner.`);
+    // Try primary requested model, then fall back to reliable gemini-2.5-flash
+    const candidateModels = Array.from(new Set([this.model, 'gemini-2.5-flash']));
+    let lastError: Error | null = null;
 
-      const isRateLimited = errorMsg.includes('429') || errorMsg.includes('quota');
-      const fallbackReason = isRateLimited
-        ? 'AI is busy (rate limit reached), showing an authentic rule-based plan.'
-        : 'AI service temporarily unavailable, showing an authentic rule-based plan.';
-
-      return {
-        plan: generateFallbackPlan(input),
-        fallbackUsed: true,
-        fallbackReason
-      };
+    for (const modelToTry of candidateModels) {
+      try {
+        console.log(`[GeminiLlmService] Attempting plan generation with: ${modelToTry}`);
+        const plan = await this.callWithRetry(() => this.executePlanGeneration(input, modelToTry));
+        console.log(`[GeminiLlmService] Generation successful with model: ${modelToTry}`);
+        return {
+          plan,
+          fallbackUsed: false
+        };
+      } catch (err: unknown) {
+        lastError = err instanceof Error ? err : new Error(String(err));
+        console.warn(`[GeminiLlmService] Model ${modelToTry} unavailable (${lastError.message}). Attempting failover...`);
+      }
     }
+
+    const errorMsg = lastError?.message || 'Unknown error';
+    console.warn(`[GeminiLlmService] All AI models exhausted (${errorMsg}). Switching to rule-based planner.`);
+
+    const isRateLimited = errorMsg.includes('429') || errorMsg.includes('quota');
+    const fallbackReason = isRateLimited
+      ? 'AI is busy (rate limit reached), showing an authentic rule-based plan.'
+      : 'AI service temporarily unavailable, showing an authentic rule-based plan.';
+
+    return {
+      plan: generateFallbackPlan(input),
+      fallbackUsed: true,
+      fallbackReason
+    };
   }
 
-  private async executePlanGeneration(input: EventInput): Promise<EventPlan> {
+  private async executePlanGeneration(input: EventInput, modelName: string): Promise<EventPlan> {
     if (!this.client) throw new Error('Gemini client not initialized');
 
     const systemInstruction = getPlanSystemInstruction();
     const prompt = buildPlanUserPrompt(input);
 
     const callPromise = this.client.models.generateContent({
-      model: this.model,
+      model: modelName,
       contents: prompt,
       config: {
         systemInstruction,
@@ -204,7 +216,6 @@ export class GeminiLlmService implements ILlmService {
     const response = await this.withTimeout(callPromise, this.timeoutMs);
     const rawText = response.text || '';
 
-    // Validate structured JSON with Zod
     let parsedJson: unknown;
     try {
       parsedJson = JSON.parse(rawText);
@@ -212,7 +223,6 @@ export class GeminiLlmService implements ILlmService {
       throw new Error('Model produced non-JSON output');
     }
 
-    // Attach runtime fields
     const enriched = {
       id: `plan_ai_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       generatedAt: new Date().toISOString(),
@@ -225,10 +235,9 @@ export class GeminiLlmService implements ILlmService {
     const validated = eventPlanSchema.safeParse(enriched);
     if (!validated.success) {
       console.warn('[GeminiLlmService] Schema validation failed. Attempting repair prompt...');
-      return await this.repairPlanWithLlm(rawText, input);
+      return await this.repairPlanWithLlm(rawText, input, modelName);
     }
 
-    // Ensure mathematical budget integrity
     validated.data.budgetBreakdown = normalizeBudgetBreakdown(
       validated.data.budgetBreakdown,
       input.totalBudget
@@ -237,10 +246,7 @@ export class GeminiLlmService implements ILlmService {
     return validated.data;
   }
 
-  /**
-   * One-shot repair attempt if schema validation failed
-   */
-  private async repairPlanWithLlm(malformedJson: string, input: EventInput): Promise<EventPlan> {
+  private async repairPlanWithLlm(malformedJson: string, input: EventInput, modelName: string): Promise<EventPlan> {
     if (!this.client) throw new Error('Client unavailable for repair');
 
     const repairPrompt = `The previous JSON response did not strictly pass schema validation. Correct it to match the expected schema precisely, ensuring total budget is ${input.totalBudget} ${input.currency}.
@@ -248,7 +254,7 @@ Malformed JSON:
 ${malformedJson.slice(0, 3000)}`;
 
     const repairCall = this.client.models.generateContent({
-      model: this.model,
+      model: modelName,
       contents: repairPrompt,
       config: {
         responseMimeType: 'application/json',
@@ -276,9 +282,6 @@ ${malformedJson.slice(0, 3000)}`;
     return finalValidation;
   }
 
-  /**
-   * Streams conversational refinement chunks for real-time interactive user feedback.
-   */
   public async *streamChat(
     message: string,
     currentPlan: EventPlan,
@@ -289,6 +292,7 @@ ${malformedJson.slice(0, 3000)}`;
       return;
     }
 
+    const candidateModels = Array.from(new Set([this.model, 'gemini-2.5-flash']));
     const systemInstruction = getChatSystemInstruction();
     const prompt = buildChatUserPrompt(message, currentPlan);
 
@@ -300,31 +304,32 @@ ${malformedJson.slice(0, 3000)}`;
       { role: 'user', parts: [{ text: prompt }] }
     ];
 
-    try {
-      const stream = await this.client.models.generateContentStream({
-        model: this.model,
-        contents,
-        config: {
-          systemInstruction,
-          temperature: 0.7,
-          maxOutputTokens: 2048
-        }
-      });
+    for (const modelToTry of candidateModels) {
+      try {
+        const stream = await this.client.models.generateContentStream({
+          model: modelToTry,
+          contents,
+          config: {
+            systemInstruction,
+            temperature: 0.7,
+            maxOutputTokens: 2048
+          }
+        });
 
-      for await (const chunk of stream) {
-        if (chunk.text) {
-          yield chunk.text;
+        for await (const chunk of stream) {
+          if (chunk.text) {
+            yield chunk.text;
+          }
         }
+        return;
+      } catch (err: unknown) {
+        console.warn(`[GeminiLlmService] Chat stream failed on ${modelToTry}, trying failover...`, err);
       }
-    } catch (err: unknown) {
-      console.error('[GeminiLlmService] Chat stream error:', err);
-      yield ' The AI assistant is currently experiencing high demand. Please try again shortly, or adjust your categories in the budget tracker directly.';
     }
+
+    yield ' The AI assistant is currently experiencing high demand. Please try again shortly, or adjust your categories in the budget tracker directly.';
   }
 
-  /**
-   * Exponential backoff helper for handling transient 429 and 5xx errors
-   */
   private async callWithRetry<T>(fn: () => Promise<T>, maxRetries = 1, delayMs = 1500): Promise<T> {
     let attempt = 0;
     while (attempt <= maxRetries) {
@@ -360,7 +365,6 @@ ${malformedJson.slice(0, 3000)}`;
   }
 }
 
-// Global default service instance
 let globalLlmService: ILlmService | null = null;
 
 export function getLlmService(): ILlmService {
@@ -373,4 +377,3 @@ export function getLlmService(): ILlmService {
 export function setLlmService(service: ILlmService): void {
   globalLlmService = service;
 }
-
