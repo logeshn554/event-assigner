@@ -63,3 +63,4 @@ describe('Integration: POST /api/chat', () => {
     expect(data.error.code).toBe('VALIDATION_ERROR');
   });
 });
+

@@ -108,3 +108,4 @@ export function TimelineView({ timeline, onToggleTask }: TimelineViewProps) {
     </div>
   );
 }
+

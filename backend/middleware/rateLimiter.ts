@@ -76,13 +76,12 @@ export class MemoryRateLimitStore implements IRateLimitStore {
 
   private cleanup(): void {
     const now = Date.now();
-    for (const [key, timestamps] of this.hits.entries()) {
-      // Clear if all timestamps are older than 10 minutes
-      const hasRecent = timestamps.some((ts) => now - ts < 10 * 60 * 1000);
+    this.hits.forEach((timestamps: number[], key: string) => {
+      const hasRecent = timestamps.some((ts: number) => now - ts < 10 * 60 * 1000);
       if (!hasRecent) {
         this.hits.delete(key);
       }
-    }
+    });
   }
 
   public destroy(): void {
@@ -114,3 +113,4 @@ export function getClientIp(req: Request): string {
   }
   return '127.0.0.1';
 }
+

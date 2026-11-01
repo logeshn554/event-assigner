@@ -49,3 +49,4 @@ describe('Component: VendorChecklist', () => {
     expect(mockToggle).toHaveBeenCalledWith('v_venue');
   });
 });
+

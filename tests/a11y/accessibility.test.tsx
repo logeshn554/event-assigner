@@ -55,3 +55,4 @@ describe('Accessibility Audit (WCAG 2.1 AA with jest-axe)', () => {
     expect(await axe(footerContainer)).toHaveNoViolations();
   });
 });
+

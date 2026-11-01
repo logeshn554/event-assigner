@@ -45,3 +45,4 @@ export const eventInputSchema = z
   .strict();
 
 export type EventInput = z.infer<typeof eventInputSchema>;
+

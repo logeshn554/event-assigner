@@ -26,3 +26,4 @@ export function downloadJsonFile(filename: string, data: unknown): void {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+

@@ -39,3 +39,4 @@ export const CACHE_CONFIG = {
 
 export const PLAN_STORAGE_KEY = 'event_assistant_saved_plans_v1';
 export const CURRENT_PLAN_STORAGE_KEY = 'event_assistant_current_plan_v1';
+

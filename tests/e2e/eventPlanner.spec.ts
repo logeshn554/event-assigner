@@ -33,3 +33,4 @@ test.describe('Event Planning Assistant E2E Flow', () => {
     await expect(page.getByText('Themes & Aesthetic Concepts')).toBeVisible();
   });
 });
+

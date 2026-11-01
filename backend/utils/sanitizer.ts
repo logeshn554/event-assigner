@@ -37,3 +37,4 @@ export function delimitUserInput(content: Record<string, unknown> | string): str
   const safeContent = rawString.replace(/<\/user_input>/gi, '&lt;/user_input&gt;');
   return `<user_input>\n${safeContent}\n</user_input>`;
 }
+

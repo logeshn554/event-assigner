@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const envSchema = z.object({
   GEMINI_API_KEY: z.string().optional().default(''),
-  GEMINI_MODEL: z.string().min(1).default('gemini-2.5-flash'),
+  GEMINI_MODEL: z.string().min(1).default('gemini-3.8-flash'),
   LLM_TIMEOUT_MS: z.coerce.number().int().positive().default(25000),
   RATE_LIMIT_PLAN_RPM: z.coerce.number().int().positive().default(10),
   RATE_LIMIT_CHAT_RPM: z.coerce.number().int().positive().default(20),
@@ -38,3 +38,4 @@ export function getServerEnv(): ServerEnv {
 export function resetServerEnv(): void {
   parsedEnv = null;
 }
+

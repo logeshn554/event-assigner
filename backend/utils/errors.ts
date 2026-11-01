@@ -86,3 +86,4 @@ export function formatErrorResponse(error: unknown): { response: ApiErrorRespons
     status: 500
   };
 }
+

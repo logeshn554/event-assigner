@@ -27,3 +27,4 @@ Object.defineProperty(window, 'scrollTo', {
 
 // Mock Element.prototype.scrollIntoView
 Element.prototype.scrollIntoView = () => {};
+

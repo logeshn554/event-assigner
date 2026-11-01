@@ -19,7 +19,7 @@ export class LruTtlCache<T> implements ICacheStore<T> {
   private maxItems: number;
   private defaultTtlMs: number;
 
-  constructor(maxItems = CACHE_CONFIG.MAX_ITEMS, defaultTtlMs = CACHE_CONFIG.TTL_MS) {
+  constructor(maxItems: number = CACHE_CONFIG.MAX_ITEMS, defaultTtlMs: number = CACHE_CONFIG.TTL_MS) {
     this.maxItems = maxItems;
     this.defaultTtlMs = defaultTtlMs;
   }
@@ -92,3 +92,4 @@ export function generatePlanCacheKey(input: EventInput): string {
   // Simple, deterministic string representation
   return `plan:${JSON.stringify(normalized)}`;
 }
+

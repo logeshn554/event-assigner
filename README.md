@@ -145,3 +145,4 @@ Deployable with zero extra configuration:
 - **Prompt Injection Defense**: User input sanitized, length-capped, and wrapped in `<user_input>` delimiters.
 - **Zero Dangerous HTML**: No `dangerouslySetInnerHTML`; all responses rendered as safe React text nodes.
 - **WCAG 2.1 AA Compliant**: Semantic landmarks (`<header>`, `<main>`, `<footer>`), skip-to-content link, `aria-live` announcements, touch targets >= 44px, and contrast >= 4.5:1.
+

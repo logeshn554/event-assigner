@@ -29,3 +29,4 @@ This document outlines the security architecture, threat model, and protective m
 ## 3. Vulnerability Reporting
 
 If you identify a security vulnerability, please do not open a public issue. Report responsibly to: `security@plancraft.local`.
+

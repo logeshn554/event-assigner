@@ -162,3 +162,4 @@ export function ChatRefinement({ plan }: ChatRefinementProps) {
     </div>
   );
 }
+

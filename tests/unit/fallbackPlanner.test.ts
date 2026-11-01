@@ -74,3 +74,4 @@ describe('generateFallbackPlan', () => {
     expect(categories.some((c) => c.includes('Permits') || c.includes('Staging'))).toBe(true);
   });
 });
+

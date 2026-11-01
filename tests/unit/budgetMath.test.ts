@@ -40,3 +40,4 @@ describe('normalizeBudgetBreakdown', () => {
     expect(normalizeBudgetBreakdown(cats, 0)).toEqual(cats);
   });
 });
+

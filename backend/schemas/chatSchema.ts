@@ -17,3 +17,4 @@ export const chatRequestSchema = z
   .strict();
 
 export type ChatRequest = z.infer<typeof chatRequestSchema>;
+

@@ -63,3 +63,4 @@ describe('Component: BudgetTracker', () => {
     expect(mockUpdate).toHaveBeenCalledWith('cat_decor', 480000);
   });
 });
+

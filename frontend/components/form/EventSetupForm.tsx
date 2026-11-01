@@ -375,3 +375,4 @@ export function EventSetupForm({ onSubmit, isLoading }: EventSetupFormProps) {
     </div>
   );
 }
+

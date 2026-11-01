@@ -23,3 +23,4 @@ test.describe('Keyboard Accessibility and Axe Scan E2E', () => {
     await expect(main).toBeFocused();
   });
 });
+

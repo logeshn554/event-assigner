@@ -468,13 +468,15 @@ function getFallbackPersonalizedIdeas(input: EventInput): PersonalizedIdeas {
         course: 'Grand Main Course',
         items: isIndianContext
           ? ['Signature Slow-Cooked Dal Bukhara', 'Paneer Lababdar / Butter Chicken', 'Saffron Pulao with Garlic Butter Naan']
-          : ['Roasted Herb Chicken / Stuffed Portobello', 'Garlic Rosemary Baby Potatoes', 'Seasonal Glazed Asparagus']
+          : ['Roasted Herb Chicken / Stuffed Portobello', 'Garlic Rosemary Baby Potatoes', 'Seasonal Glazed Asparagus'],
+        dietaryNotes: ''
       },
       {
         course: 'Dessert & Celebrations',
         items: isIndianContext
           ? ['Warm Gulab Jamun with Artisanal Rabdi Gelato', 'Gourmet Baklava Cups']
-          : ['Signature Celebration Cake', 'Warm Chocolate Lava Molten Cups with Vanilla Bean Ice Cream']
+          : ['Signature Celebration Cake', 'Warm Chocolate Lava Molten Cups with Vanilla Bean Ice Cream'],
+        dietaryNotes: ''
       }
     ],
     invitationWording: `With joyful hearts, we warmly invite you to join us in celebrating ${input.themeStyle || input.eventType} on ${input.date} in ${input.city}. Your gracious presence will make this milestone truly unforgettable!`,
@@ -487,3 +489,4 @@ function getFallbackPersonalizedIdeas(input: EventInput): PersonalizedIdeas {
     ]
   };
 }
+
